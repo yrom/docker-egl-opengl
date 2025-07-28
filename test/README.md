@@ -1,3 +1,6 @@
+A shadertoy implementation in pure C.
+
+
 ## Usage
 
 Open in VScode Dev Container feature: https://aka.ms/vscode-remote/containers/open-repo
