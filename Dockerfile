@@ -13,7 +13,7 @@ RUN pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/ ; \
 RUN pip install meson mako --no-cache-dir --break-system-packages
 
 ARG MESA_VERSION=24.3.4
-ARG LLVM_VERSION=15
+ARG LLVM_VERSION=16
 ARG BUILD_TYPE=debugoptimized
 ARG BUILD_OPTIMIZATION=2
 ARG UNWIND=enabled
@@ -67,9 +67,11 @@ RUN set -e; \
 RUN rm -rf /var/tmp/mesa-${MESA_VERSION};
 
 FROM debian-custom-apt:bookworm-slim AS runtime
-ARG LLVM_VERSION=15
+ARG LLVM_VERSION=16
 
 COPY --from=builder /var/tmp/installdir /usr/local
+# replace the temporary install directory with the real one.
+RUN find /usr/local/lib -iname '*.pc' -exec sed -i 's|/var/tmp/installdir|/usr/local|g' {} \;
 
 # Install Runtime dependencies.
 RUN apt-get update -y && \
