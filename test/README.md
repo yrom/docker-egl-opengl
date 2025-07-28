@@ -1,3 +1,7 @@
+## Usage
+
+Open in VScode Dev Container feature: https://aka.ms/vscode-remote/containers/open-repo
+
 ## Build 
 
 ```sh
@@ -37,3 +41,7 @@ make clean
 bear -- make DEBUG=1
 ```
 
+## Acknowledge
+
+- [shadertoy.com](https://www.shadertoy.com/)
+- [EGL Eye: OpenGL Visualization without an X Server](https://developer.nvidia.com/blog/egl-eye-opengl-visualization-without-x-server/)
