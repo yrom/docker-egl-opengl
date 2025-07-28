@@ -26,7 +26,8 @@ Encode capture images to video:
 $ ffmpeg -framerate 30 -i capture/70s_melt_%04d.png -c:v libx264 -pix_fmt yuv420p 70s_melt.mp4
 ```
 
-[70s_melt.mp4](./70s_melt.mp4)
+https://github.com/user-attachments/assets/070f8d98-f3d1-495e-815e-3892d6bc0b19
+
 
 ## Generate Compile Commands
 
