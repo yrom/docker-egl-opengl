@@ -1,4 +1,4 @@
-FROM debian-custom-apt:bookworm-slim as builder
+FROM debian-custom-apt:bookworm-slim AS builder
 # Install build dependencies.
 RUN apt-get install -y --fix-missing \
     git g++ cmake automake autoconf pkgconf ninja-build \
@@ -31,17 +31,19 @@ RUN apt-get clean
 RUN set -e; \
     mkdir -p /var/tmp; \
     cd /var/tmp; \
-    wget "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz"; \
+    wget "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz" -q; \
     test -f mesa-${MESA_VERSION}.tar.xz && \
-        tar xvf mesa-${MESA_VERSION}.tar.xz && \
+        tar xf mesa-${MESA_VERSION}.tar.xz && \
         rm mesa-${MESA_VERSION}.tar.xz;
 
 # meson options: https://gitlab.freedesktop.org/mesa/mesa/-/raw/mesa-24.3.4/meson_options.txt
 RUN set -e; \
     cd /var/tmp/mesa-${MESA_VERSION}; \
+    mkdir -p /var/tmp/installdir; \
     meson setup build/ \
         -D buildtype=${BUILD_TYPE} \
-        -D prefix=/usr/local \
+        -D prefix=/var/tmp/installdir \
+        -D b_ndebug=true \
         -D platforms=[] \
         -D llvm=enabled \
         -D egl-native-platform=surfaceless \
@@ -53,6 +55,8 @@ RUN set -e; \
         -D gbm=disabled \
         -D glx=disabled \
         -D vulkan-drivers=[] \
+        -D video-codecs=[] \
+        -D xmlconfig=disabled \
         -D lmsensors=disabled \
         -D gallium-xa=disabled \
         -D gallium-vdpau=disabled \
@@ -60,14 +64,16 @@ RUN set -e; \
         -D libunwind=${UNWIND}; \
     meson install -C build;
 # remove all build files
-RUN rm -rf /var/tmp;
+RUN rm -rf /var/tmp/mesa-${MESA_VERSION};
 
-FROM debian-custom-apt:bookworm-slim as runtime
-ARG LLVM_VERSION
-COPY --from=builder /usr/local/lib /usr/local/lib
-COPY --from=builder /usr/local/include /usr/local/include
+FROM debian-custom-apt:bookworm-slim AS runtime
+ARG LLVM_VERSION=15
 
-RUN apt-get update -y && apt-get install -y --no-install-recommends libllvm${LLVM_VERSION} libdrm2 libunwind8 && \
+COPY --from=builder /var/tmp/installdir /usr/local
+
+# Install Runtime dependencies.
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends libzstd1 libgcc-s1 zlib1g libc6 libllvm${LLVM_VERSION} libdrm2 libunwind8 && \
     apt-get clean
 
 ENV LIBGL_ALWAYS_SOFTWARE="1" \
