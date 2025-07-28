@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug shadertoy",
+            "program": "${workspaceFolder}/build/shadertoy",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build shadertoy",
+            "initCommands": [
+                "settings set target.disable-aslr false"
+            ],
+        }
+    ]
+}

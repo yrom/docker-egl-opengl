@@ -1,0 +1,7 @@
+{
+    "clangd.arguments": [
+        "--query-driver=clang",
+        "--header-insertion=never",
+        "--clang-tidy",
+    ]
+}
