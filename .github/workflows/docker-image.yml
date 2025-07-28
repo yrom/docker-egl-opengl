@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: |
+        docker build . --file base.Dockerfile --tag debian-custom-apt:bookworm-slim
+        docker build . --file Dockerfile --tag mesa-egl-opengl:v24.3.4 --build-arg UNWIND=disabled --build-arg LLVM_VERSION=16 --build-arg BUILD_TYPE=release
+      
